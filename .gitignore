@@ -56,4 +56,4 @@ buck-out/
 *.jsbundle
 
 gradle.properties
-app/config/tokens.js
+app/config/tokens.ts

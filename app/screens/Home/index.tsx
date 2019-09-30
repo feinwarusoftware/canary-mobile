@@ -146,6 +146,11 @@ class Home extends Component {
     });
   };
 
+  skip10 = async () => {
+    let position = await TrackPlayer.getPosition();
+    TrackPlayer.seekTo(position + 10);
+  }
+
   render() {
     let state = TrackPlayer.getState().then(e => {
       console.log(e);
@@ -158,7 +163,7 @@ class Home extends Component {
           <Button title="Pause" onPress={()=> TrackPlayer.pause()} />
           <Button title="Next" onPress={()=> TrackPlayer.skipToNext()} />
           <Button title="Prev" onPress={()=> TrackPlayer.skipToPrevious()} />
-          <Button title="Prev" onPress={()=> TrackPlayer.seekTo()} />
+          <Button title="Skip 10" onPress={()=> this.skip10()} />
         </View>
         <ScrollView
           refreshControl={
