@@ -19,48 +19,13 @@ import { connect } from "react-redux";
 import TrackPlayer, { getQueue, reset } from "react-native-track-player";
 import { Svg, Path, Defs, ClipPath, Image } from "react-native-svg";
 import metrics from "../../config/metrics";
-import MusicFiles from "react-native-get-music-files";
+import MusicFiles, { RNAndroidAudioStore } from "react-native-get-music-files";
+import { Track } from "../../api/interfaces";
+import getTracks from "../../api/getTracks";
 
 class Home extends Component {
-  constructor() {
-    super();
-
-    this.requestPermission = async () => {
-      try {
-        const granted = await PermissionsAndroid.requestMultiple(
-          [
-            PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
-          ],
-          {
-            title: "Permission",
-            message: "Storage access is requiered",
-            buttonPositive: "OK"
-          }
-        );
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          alert("You can use the package");
-        } else {
-          this.requestPermission();
-        }
-      } catch (err) {
-        console.warn(err);
-      }
-    };
-
-    this.getAll = () => {
-      MusicFiles.getAll({
-        blured: false, // works only when 'cover' is set to true
-        artist: true,
-        duration: true, //default : true
-        cover: true, //default : true,
-        genre: true,
-        title: true,
-        minimumSongDuration: 10000, // get songs bigger than 10000 miliseconds duration,
-        batchNumber: 1,
-        delay: 1000
-      });
-    };
+  constructor(props:any) {
+    super(props);
 
     this.state = {
       getAlbumsInput: "",
@@ -71,23 +36,31 @@ class Home extends Component {
       albums: [],
       songs: [],
       search: [],
-      refreshing: false
+      refreshing: false,
     };
+  }
+
+  requestPermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.requestMultiple(
+        [
+          PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        ],
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        alert("You can use the package");
+      } else {
+        this.requestPermission();
+      }
+    } catch (err) {
+      console.warn(err);
+    }
   }
 
   componentDidMount = async () => {
     this.requestPermission();
-
-    DeviceEventEmitter.addListener("onBatchReceived", params => {
-      this.setState({
-        ...this.state,
-        tracks: [...this.state.tracks, params.batch]
-      });
-    });
-
-    DeviceEventEmitter.addListener("onLastBatchReceived", params => {
-      this.setState(alert("last batch sent"));
-    });
+    getTracks();
 
     await TrackPlayer.setupPlayer().then(() => {
       TrackPlayer.updateOptions({
@@ -111,13 +84,8 @@ class Home extends Component {
     });
   }
 
-  componentWillUnmount() {
-    DeviceEventEmitter.removeAllListeners();
-  }
-
   _onRefresh = () => {
     this.setState({ refreshing: true });
-    this.getAll();
     this.setState({ refreshing: false });
     console.log(this.state.tracks);
   };
@@ -129,10 +97,10 @@ class Home extends Component {
       TrackPlayer.add({
         id: queue.length++,
         url: "file://" + track.path,
-        title: track.title,
-        artist: track.author,
-        album: track.album,
-        artwork: track.cover
+        title: track.name,
+        artist: track.artist,
+        album: track.album.name,
+        artwork: track.album.cover
       }).then(() => {
         TrackPlayer.getQueue().then(e => {
           console.log(e);
@@ -151,10 +119,12 @@ class Home extends Component {
     TrackPlayer.seekTo(position + 10);
   }
 
+  getAll = () => {
+    getTracks(true);
+  }
+
   render() {
-    let state = TrackPlayer.getState().then(e => {
-      console.log(e);
-    });
+
     return (
       <View style={styles.container}>
         <View style={{display: "flex", flexDirection: "row"}}>
@@ -174,18 +144,18 @@ class Home extends Component {
           }
           style={{ height: 100, width: "100%" }}
         >
-          {this.state.tracks.map((e, i) => {
+          {this.props.tracks.map((e, i) => {
             return(
-              <TouchableHighlight key={i} onPress={() => this.addToQueue(e[0])}>
+              <TouchableHighlight key={i} onPress={() => this.addToQueue(e)}>
                 <View>
                   <Text>
-                    {e[0].title == null ? "No title" : e[0].title}
+                    {e.name == null ? "No title" : e.name}
                   </Text>
                   <Text>
-                    {e[0].author == null ? "No artist" : e[0].author}
+                    {e.artist == null ? "No artist" : e.artist}
                   </Text>
                   <Text>
-                    {e[0].album == null ? "No album" : e[0].album}
+                    {e.album.name == null ? "No album" : e.album.name}
                   </Text>
                 </View>
               </TouchableHighlight>
@@ -202,27 +172,28 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#F5FCFF"
+    backgroundColor: "#F5FCFF",
   },
   welcome: {
     fontSize: 20,
     textAlign: "center",
-    margin: 10
+    margin: 10,
   },
   instructions: {
     textAlign: "center",
     color: "#333333",
-    marginBottom: 5
+    marginBottom: 5,
   }
 });
 
-function mapStateToProps() {
-  return {};
-}
+const mapStateToProps = (state) => {
+  return {
+    tracks: state.importTracks,
+  };
+};
+
 function mapDispatchToProps() {
   return {};
 }
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Home);
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);

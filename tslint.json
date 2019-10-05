@@ -1,6 +1,7 @@
 {
   "extends": "tslint-config-airbnb",
   "rules": {
-    "quotemark": [true, "double", "jsx-double"]
+    "quotemark": [true, "double", "jsx-double"],
+    "import-name": [false]
   }
 }

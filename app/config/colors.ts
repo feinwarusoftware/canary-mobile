@@ -8,7 +8,7 @@ const colors = {
   darkGrey: "#222222",
   midGrey: "#707070",
   lightGrey: "#c5c5c5",
-  black: "#000000"
+  black: "#000000",
 };
 
 export default colors;

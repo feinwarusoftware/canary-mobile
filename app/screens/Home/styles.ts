@@ -4,7 +4,7 @@ import metrics from "../../config/metrics";
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colors.dirtyWhite
+    backgroundColor: "#2E2E2E",
   },
   swoosh: {
     position: "absolute",

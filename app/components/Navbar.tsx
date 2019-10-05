@@ -21,8 +21,6 @@ class Navbar extends Component {
   componentDidMount = () => {};
 
   render() {
-    const { routes } = this.props.navigation.state;
-
     const bottomNav = () => {
       if (this.state.search === true){
         return (
@@ -35,27 +33,28 @@ class Navbar extends Component {
             contentContainerStyle={styles.navBottom}
             horizontal={true}
           >
-            {routes.map((e, i) =>
+            {this.props.routes.map((e, i) =>
               <TouchableOpacity
-                onPress={() => this.props.navigation.navigate(e.routeName)}
                 key={i}
-                style={
+                /*style={
                   this.props.navigation.state.index === i
                     ? {
                       ...styles.navTabContainer,
                       borderBottomColor: colors.white
                     }
                     : styles.navTabContainer
-                }
+                }*/
+                style={styles.navTabContainer}
               >
                 <Text
-                  style={
+                  /*style={
                     this.props.navigation.state.index !== i
                       ? { ...styles.navTab, opacity: 0.5 }
                       : styles.navTab
-                  }
+                  }*/
+                  style={styles.navTab}
                 >
-                  {e.routeName}
+                  {e}
                 </Text>
               </TouchableOpacity>
             )}
@@ -69,7 +68,7 @@ class Navbar extends Component {
       <StatusBar backgroundColor="#00000000" translucent={true} barStyle="light-content" />
       <LinearGradient colors={[colors.canary, colors.canarySecondary]} style={styles.navBar}>
         <View style={styles.navTop}>
-          <Logo style={styles.navImage} width={97.8} height={40} />
+          <Logo style={styles.navImage} width={97.8} height={35} />
           <TouchableOpacity onPress={() => this.toggleSearchBar()} style={styles.searchButton}>
             <Search width={18.9} height={18.6} fill="#fff" />
           </TouchableOpacity>
@@ -99,7 +98,7 @@ const styles = StyleSheet.create({
     flex: 1,
     position: "absolute",
     top: 10,
-    left: (metrics.screenWidth / 2) - (97.8 / 2)
+    left: (metrics.screenWidth / 2) - (97.8 / 2),
   },
   navTab: {
     fontFamily: "Roboto",

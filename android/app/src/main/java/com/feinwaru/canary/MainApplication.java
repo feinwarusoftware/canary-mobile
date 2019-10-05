@@ -6,6 +6,7 @@ import com.facebook.react.ReactApplication;
 import com.BV.LinearGradient.LinearGradientPackage;
 import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
 import com.cinder92.musicfiles.RNReactNativeGetMusicFilesPackage;
+import com.drazail.rnandroidstore.RNAndroidStorePackage;
 import com.horcrux.svg.SvgPackage;
 import com.guichaguri.trackplayer.TrackPlayer;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
@@ -34,7 +35,8 @@ public class MainApplication extends Application implements ReactApplication {
             new RNReactNativeGetMusicFilesPackage(),
             new SvgPackage(),
             new TrackPlayer(),
-            new RNGestureHandlerPackage()
+            new RNGestureHandlerPackage(),
+            new RNAndroidStorePackage()
       );
     }
 

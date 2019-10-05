@@ -1,7 +1,3 @@
-// export action creators
-import * as loginActions from "./loginActions";
+import importTracks from "./importTracks";
 
-export const ActionCreators = Object.assign(
-  {},
-  loginActions
-);
+export {importTracks}
