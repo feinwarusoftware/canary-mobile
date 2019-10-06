@@ -12,16 +12,17 @@ import {
   ScrollView,
   StyleSheet,
   RefreshControl,
-  TouchableHighlight
+  TouchableHighlight,
+  FlatList
 } from "react-native";
 import { connect } from "react-redux";
 //import styles from "./styles";
-import TrackPlayer, { getQueue, reset } from "react-native-track-player";
+import TrackPlayer from "react-native-track-player";
 import { Svg, Path, Defs, ClipPath, Image } from "react-native-svg";
 import metrics from "../../config/metrics";
 import MusicFiles, { RNAndroidAudioStore } from "react-native-get-music-files";
-import { Track } from "../../api/interfaces";
 import getTracks from "../../api/getTracks";
+import Track from "../../components/Track";
 
 class Home extends Component {
   constructor(props:any) {
@@ -40,55 +41,9 @@ class Home extends Component {
     };
   }
 
-  requestPermission = async () => {
-    try {
-      const granted = await PermissionsAndroid.requestMultiple(
-        [
-          PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-        ],
-      );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        alert("You can use the package");
-      } else {
-        this.requestPermission();
-      }
-    } catch (err) {
-      console.warn(err);
-    }
+  componentDidMount() {
+
   }
-
-  componentDidMount = async () => {
-    this.requestPermission();
-    getTracks();
-
-    await TrackPlayer.setupPlayer().then(() => {
-      TrackPlayer.updateOptions({
-        ratingType: TrackPlayer.RATING_HEART,
-        stopWithApp: true,
-        capabilities: [
-          TrackPlayer.CAPABILITY_SKIP_TO_PREVIOUS,
-          TrackPlayer.CAPABILITY_PLAY,
-          TrackPlayer.CAPABILITY_PAUSE,
-          TrackPlayer.CAPABILITY_SKIP_TO_NEXT
-        ],
-        // An array of capabilities that will show up when the notification is in the compact form on Android
-        compactCapabilities: [
-          TrackPlayer.CAPABILITY_SKIP_TO_PREVIOUS,
-          TrackPlayer.CAPABILITY_PLAY,
-          TrackPlayer.CAPABILITY_PAUSE,
-          TrackPlayer.CAPABILITY_SKIP_TO_NEXT
-        ],
-        icon: require("../../static/img/notifcation/notification.png") // The notification icon
-      });
-    });
-  }
-
-  _onRefresh = () => {
-    this.setState({ refreshing: true });
-    this.setState({ refreshing: false });
-    console.log(this.state.tracks);
-  };
 
   addToQueue = (track) => {
     // Adds a track to the queue
@@ -144,23 +99,11 @@ class Home extends Component {
           }
           style={{ height: 100, width: "100%" }}
         >
-          {this.props.tracks.map((e, i) => {
-            return(
-              <TouchableHighlight key={i} onPress={() => this.addToQueue(e)}>
-                <View>
-                  <Text>
-                    {e.name == null ? "No title" : e.name}
-                  </Text>
-                  <Text>
-                    {e.artist == null ? "No artist" : e.artist}
-                  </Text>
-                  <Text>
-                    {e.album.name == null ? "No album" : e.album.name}
-                  </Text>
-                </View>
-              </TouchableHighlight>
-            );
-          })}
+        <FlatList
+          data={this.props.tracks}
+          renderItem={({ item }) => <Track track={item} />}
+          keyExtractor={item => item.path}
+        />
         </ScrollView>
       </View>
     );
@@ -172,7 +115,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#F5FCFF",
+    backgroundColor: "#2e2e2e",
   },
   welcome: {
     fontSize: 20,

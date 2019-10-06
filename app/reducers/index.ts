@@ -1,6 +1,7 @@
 import { combineReducers } from "redux";
-import { importTracks } from "../actions";
+import { updatePlaying, importTracks } from "../actions";
 
 export default combineReducers({
   importTracks,
+  updatePlaying,
 });

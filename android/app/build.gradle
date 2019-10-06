@@ -73,7 +73,7 @@ import com.android.build.OutputFile
  */
 
 project.ext.react = [
-    entryFile: "index.js"
+    entryFile: "index.ts"
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
@@ -105,8 +105,8 @@ android {
         applicationId "com.feinwaru.canary"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 2
-        versionName "0.0.2"
+        versionCode 3
+        versionName "0.0.3"
     }
     signingConfigs {
         release {

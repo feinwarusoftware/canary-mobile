@@ -1,1 +1,2 @@
 export const IMPORT_TRACKS = "IMPORT_TRACKS";
+export const UPDATE_PLAYING = "UPDATE_PLAYING";
