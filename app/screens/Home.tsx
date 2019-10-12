@@ -19,10 +19,10 @@ import { connect } from "react-redux";
 //import styles from "./styles";
 import TrackPlayer from "react-native-track-player";
 import { Svg, Path, Defs, ClipPath, Image } from "react-native-svg";
-import metrics from "../../config/metrics";
+import metrics from "../config/metrics";
 import MusicFiles, { RNAndroidAudioStore } from "react-native-get-music-files";
-import getTracks from "../../api/getTracks";
-import Track from "../../components/Track";
+import getTracks from "../api/getTracks";
+import Track from "../components/Track";
 
 class Home extends Component {
   constructor(props:any) {
@@ -69,32 +69,37 @@ class Home extends Component {
     });
   };
 
-  skip10 = async () => {
-    let position = await TrackPlayer.getPosition();
-    TrackPlayer.seekTo(position + 10);
-  }
-
   getAll = () => {
-    getTracks(true);
+    this.setState({ refreshing: true });
+    getTracks(true).then(() => {
+      this.setState({ refreshing: false });
+    });
   }
 
   render() {
 
+    const data = this.props.tracks.reduce((r, e) => {
+      const letter = e.name[0].toUpperCase();
+      if (!r[letter]) r[letter] = { letter, tracks: [e] };
+      else r[letter].tracks.push(e);
+      return r;
+    }, {});
+
+    console.log(data)
+
     return (
       <View style={styles.container}>
         <View style={{display: "flex", flexDirection: "row"}}>
-          <Button title="getAll" onPress={this.getAll} />
           <Button title="Play" onPress={()=> TrackPlayer.play()} />
           <Button title="Pause" onPress={()=> TrackPlayer.pause()} />
           <Button title="Next" onPress={()=> TrackPlayer.skipToNext()} />
           <Button title="Prev" onPress={()=> TrackPlayer.skipToPrevious()} />
-          <Button title="Skip 10" onPress={()=> this.skip10()} />
         </View>
         <ScrollView
           refreshControl={
             <RefreshControl
+              onRefresh={() => this.getAll()}
               refreshing={this.state.refreshing}
-              onRefresh={this._onRefresh}
             />
           }
           style={{ height: 100, width: "100%" }}
@@ -116,6 +121,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#2e2e2e",
+    marginBottom: 64,
   },
   welcome: {
     fontSize: 20,

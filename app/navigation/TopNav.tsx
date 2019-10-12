@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, ScrollView, Dimensions, PermissionsAndroid } from "react-native";
+import { View, ScrollView, Dimensions, PermissionsAndroid, StatusBar } from "react-native";
 import {
   TabRouter,
   createNavigator,
@@ -14,7 +14,7 @@ import Navbar from "../components/Navbar";
 import Artists from "../screens/Artists";
 import Artist from "../screens/Artist";
 import Album from "../screens/Album";
-import ProgressBar from "../components/ProgressBar";
+import PlayBar from "../components/PlayBar";
 import Player from "../screens/Player";
 
 import Welcome1 from "../screens/Welcome/Welcome1";
@@ -22,7 +22,7 @@ import Welcome1 from "../screens/Welcome/Welcome1";
 class TopNav extends Component {
   constructor(props) {
     super(props);
-    this.state = { currentPage: 0, showProgressBar: false };
+    this.state = { currentPage: 0, showPlayBar: false };
   }
   scrollView = React.createRef<ScrollView>();
   routes = [
@@ -74,20 +74,21 @@ class TopNav extends Component {
     });
   }
 
-  showProgressBar = () => {
-    return this.setState({ showProgressBar: true });
+  showPlayBar = () => {
+    return this.setState({ showPlayBar: true });
   }
 
   componentDidMount() {
     this.requestPermission().then(() => {
       getTracks();
-      this.setupTrackPlayer().then(() => this.showProgressBar());
+      this.setupTrackPlayer().then(() => this.showPlayBar());
     });
   }
 
   render() {
     return (
-      <>
+      <View style={{backgroundColor: "#2e2e2e", flex: 1}}>
+        <StatusBar backgroundColor="#00000000" translucent={true} barStyle="light-content" />
         <Navbar routes={this.routes} />
         <ScrollView
           horizontal={true}
@@ -99,8 +100,8 @@ class TopNav extends Component {
             <Home />
           </View>
         </ScrollView>
-        {this.state.showProgressBar ? <ProgressBar /> : null}
-      </>
+        {this.state.showPlayBar ? <PlayBar /> : null}
+      </View>
     );
   }
 }
